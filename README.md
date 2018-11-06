@@ -8,7 +8,7 @@ This repo contains a Vagrantfile and Puppetfile to do some basic installation ta
 Usage
 -----
 
-Before using this repo, please ensure you have Bolt 1.0+, Vagrant 2.2.0+, and vagrant-bolt installed.
+Before using this repo, please ensure you have Bolt 1.0+, Vagrant 2.2.0+, and vagrant-bolt installed. This currently uses [vagrant-hosts](https://github.com/oscar-stack/vagrant-hosts), so please have that installed as well.
 
 To use this repo run the following commands.
 
