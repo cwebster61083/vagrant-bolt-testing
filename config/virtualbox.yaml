@@ -1,0 +1,31 @@
+---
+ssh:
+    insert_key: false
+roles:
+  base:
+    provisioners:
+      - {type: hosts, name: 'base networking'}
+    providers:
+      - type: virtualbox
+        linked_clone: true
+        overrides:
+          vm_defaults:
+            private_networks:
+              - {auto_network: true}
+            provisioners:
+              - type: hosts
+                name: 'base networking'
+                preserve_order: true
+                sync_hosts: true
+                add_localhost_hostnames: false
+                hosts:
+                  - ['@vagrant_private_networks', ['@vagrant_hostnames']]
+                imports: ['global', 'virtualbox', 'vmware']
+                exports:
+                  virtualbox:
+                    - ['@vagrant_private_networks', ['@vagrant_hostnames']]
+  large-size:
+    providers:
+      - type: virtualbox
+        customize:
+          - [modifyvm, !ruby/sym id, '--memory', 6144]

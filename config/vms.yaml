@@ -1,0 +1,47 @@
+---
+bolt:
+  run_as: root
+vms:
+  - name: master
+    hostname: master.puppetdebug.vlan
+    box: ubuntu/xenial64
+    roles:
+      - base
+      - large-size
+    provisioners:
+      - type: file
+        source: pe.conf
+        destination: /tmp/pe.conf
+      - type: bolt
+        bolt_type: task
+        name: ref_arch_setup::download_pe_tarball
+        parameters:
+          url: http://pe-releases.puppetlabs.lan/2018.1.4/puppet-enterprise-2018.1.4-ubuntu-16.04-amd64.tar.gz
+          destination: /tmp/ref_arch_setup
+      - type: bolt
+        bolt_type: task
+        name: ref_arch_setup::install_pe
+        parameters:
+          pe_tarball_path: /tmp/ref_arch_setup/puppet-enterprise-2018.1.4-ubuntu-16.04-amd64.tar.gz
+          pe_conf_path: /tmp/pe.conf
+  - name: agent
+    hostname: agent.puppetdebug.vlan
+    box: ubuntu/xenial64
+    roles:
+      - base
+    provisioners:
+      - type: bolt
+        bolt_type: task
+        name: bootstrap::linux
+        parameters:
+          master: master.puppetdebug.vlan
+        dependencies:
+          - master
+      - type: bolt
+        bolt_type: task
+        name: cert_sign
+        nodes:
+          - master
+        parameters:
+          agent_certnames: agent.puppetdebug.vlan
+          allow_dns_alt_names: 'yes'
