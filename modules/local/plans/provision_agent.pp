@@ -6,13 +6,19 @@ plan local::provision_agent (
     # TODO: Format output
     # TODO: Check that we are running as root.
     # TODO: Support windows
-    run_plan(facts, nodes => $master)
+    if get_targets($master)[0].facts()['fqdn'] == undef {
+      run_plan(facts, nodes => $master)
+    }
     $master_certname = get_targets($master)[0].facts()['fqdn']
     get_targets($nodes).each |$target| {
       run_plan(facts, nodes => $target)
       if $target.facts()['aio_agent_version'] == undef {
         # TODO: Handle errors
-        run_task('bootstrap::linux', $target, master => $master_certname)
+        $bootstrap_task = $target.facts()['os']['family'].downcase ? {
+          'windows' => 'bootstrap::windows',
+          default => 'bootstrap::linux'
+        }
+        run_task($bootstrap_task, $target, master => $master_certname)
         run_plan(facts, nodes => $target)
         $node_certname = get_targets($target)[0].facts()['fqdn']
         # TODO: Add logic for including pe_repo
