@@ -11,5 +11,6 @@ Gemfile.local
 *.log
 *.bak
 .vagrant
-!/modules/ref_arch_setup
 /modules/*
+!/modules/ref_arch_setup
+!/modules/local

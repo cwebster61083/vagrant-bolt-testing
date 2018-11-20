@@ -1,6 +1,4 @@
 ---
-ssh:
-    insert_key: false
 roles:
   base:
     provisioners:
