@@ -6,34 +6,75 @@ bolt_triggers:
     trigger_commands:
       - :up
       - :provision
-    bolt_type: plan
+    command: plan
     name: local::provision_agent
-    parameters:
+    params:
       master: master
     excludes:
       - master
+    verbose: false
   - trigger_type: :before
     trigger_commands:
       - :destroy
-    bolt_type: plan
+    command: plan
     name: local::decom_agent
-    parameters:
+    params:
       master: master
     excludes:
       - master
 vms:
   - name: master
+    bolt:
+      features:
+        - abcd
+      vars:
+        foo: bar
+      facts:
+        something: blah
     hostname: master.puppetdebug.vlan
     box: ubuntu/xenial64
     roles:
-      - base
       - large-size
+      - base
     provisioners:
       - type: bolt
-        bolt_type: plan
+        command: plan
         name: local::provision_master
+    providers:
+      - type: openstack
+        volume_boot:
+          image: 'centos_7_x86_64'
+          size: 64
+          delete_on_destroy: true
+        flavor: 'vol.large'
   - name: agent
     hostname: agent.puppetdebug.vlan
     box: ubuntu/xenial64
     roles:
+      - base
+    providers:
+      - type: openstack
+        volume_boot:
+          image: 'centos_7_x86_64'
+          size: 8
+          delete_on_destroy: true
+        flavor: 'vol.small'
+    provisioners:
+      - type: bolt
+        command: command
+        name: /bin/hostname
+        nodes: all
+  - name: windows
+    bolt:
+      run_as: Administrator
+    hostname: windows.puppetdebug.vlan
+    providers:
+      - type: openstack
+        # Image requires more disk space
+        volume_boot:
+          size: 64
+          image: 'windows_2012_r2_std_eval_x86_64'
+          delete_on_destroy: true
+    roles:
+      - windows
       - base
