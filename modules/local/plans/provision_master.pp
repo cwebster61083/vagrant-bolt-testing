@@ -1,29 +1,44 @@
-# An example plan to install PE on a node
+# An example plan to install PE on one or more nodes
 plan local::provision_master (
   String $version = '2018.1.5',
+  String $base_url = 'http://pe-releases.puppetlabs.lan',
+  String $tmp_path = '/tmp',
+  Optional[String] $download_url = undef,
   TargetSpec $nodes,
 ) {
-    run_plan(facts, nodes => $nodes)
+
+    # TODO: Format output
+    # TODO: Check that we are running as root.
+    # TODO: Error handling
+
+    notice('Updating facts for nodes')
+    without_default_logging() || { run_plan(facts, nodes => $nodes) }
     get_targets($nodes).each |$target| {
       $master_facts = get_targets($target)[0].facts()
-      $osname = $master_facts['os']['family'].downcase ? {
-        'redhat' => 'el',
-        'debian' => 'ubuntu',
-        /(suse|sles)/   => 'sles',
+      $package_name = local::master_package_name($master_facts, $version)
+      $url = $download_url ? {
+        undef => "${base_url}/${$version}/${package_name}",
+        default => $download_url,
       }
-      $osversion = $osname ? {
-        'ubuntu' => $master_facts['os']['release']['full'],
-        default => $master_facts['os']['release']['major'],
-      }
-      $arch = $osname ? {/(ubuntu|debian)/ => "amd64", default => "x86_64"}
-      upload_file('local/pe.conf', '/tmp/pe.conf', $target)
-      run_task('ref_arch_setup::download_pe_tarball', $target,
-            url => "http://pe-releases.puppetlabs.lan/${$version}/puppet-enterprise-${version}-${osname}-${osversion}-${arch}.tar.gz",
-            destination => '/tmp/ref_arch_setup'
-            )
-      run_task('ref_arch_setup::install_pe', $target,
-            pe_tarball_path => "/tmp/ref_arch_setup/puppet-enterprise-${version}-${osname}-${osversion}-${$arch}.tar.gz",
-            pe_conf_path => '/tmp/pe.conf'
-            )
+      upload_file(
+        'local/pe.conf',
+        "${tmp_path}/pe.conf",
+        $target,
+        'Uploading the pe.conf'
+      )
+      run_task(
+        'ref_arch_setup::download_pe_tarball',
+        $target,
+        'Downloading the PE tarball',
+        url => $url,
+        destination => $tmp_path
+      )
+      run_task(
+        'ref_arch_setup::install_pe',
+        $target,
+        'Installing PE, this may take a while',
+        pe_tarball_path => "${tmp_path}/${package_name}",
+        pe_conf_path => "${tmp_path}/pe.conf"
+      )
     }
 }

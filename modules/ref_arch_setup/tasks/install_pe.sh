@@ -122,10 +122,10 @@ then
     fi
 fi
 
-execute_command "tar -xvf $PT_pe_tarball_path -C /tmp/ref_arch_setup"
+execute_command "tar -xvf $PT_pe_tarball_path -C /tmp"
 
 # Using -* so we don't have to know the specific version, or parse it from the install path
-execute_command "chmod +x /tmp/ref_arch_setup/puppet-enterprise-*/puppet-enterprise-installer && /tmp/ref_arch_setup/puppet-enterprise-*/puppet-enterprise-installer -c $PT_pe_conf_path"
+execute_command "chmod +x /tmp/puppet-enterprise-*/puppet-enterprise-installer && /tmp/puppet-enterprise-*/puppet-enterprise-installer -c $PT_pe_conf_path"
 
 # Must run puppet agent twice, see https://puppet.com/docs/pe/2017.3/installing/installing_pe.html#text-mode-installation-options-for-monolithic-installations
 execute_puppet_until_idempotent
