@@ -83,7 +83,7 @@ roles:
           # Standard password of "vagrant" doesn't meed the default Windows
           # password complexity requirements. Disabling those in PowerShell is
           # doable, but a bit gross, so we just bend the password to fit.
-          net user Administrator "V@grant!"
+          net user Administrator '<%= ENV["WIN_PASSWD"] %>'
           wmic useraccount where "name='Administrator'" set PasswordExpires=FALSE
 
           # Enable RDP
@@ -109,7 +109,7 @@ roles:
         overrides:
           winrm:
             username: Administrator
-            password: 'V@grant!'
+            password: '<%= ENV["WIN_PASSWD"] %>'
           vm_defaults:
             synced_folders:
               - host_path: '.'
