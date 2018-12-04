@@ -12,11 +12,13 @@ Before using this repo, please ensure you have Bolt 1.0+, Vagrant 2.2.0+, and va
 
 To use this repo run the following commands.
 
-~~~
+~~~shell
 git clone https://github.com/jarretlavallee/vagrant-bolt-testing.git
 cd vagrant-bolt-testing
-bolt puppetfile install --boltdir .
-vagrant up
+vagrant bolt puppetfile install
+vagrant up master
+vagrant up agent
+vagrant up windows
 ~~~
 
-This will install 2 nodes locally in virtualbox: a puppet master and an agent.
+This will install 3 nodes in openstack: a puppet master and 2 agents.

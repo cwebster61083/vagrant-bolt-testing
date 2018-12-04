@@ -2,6 +2,10 @@
 plan local::provision_agent (
   TargetSpec $master,
   TargetSpec $nodes,
+#  Optional[Array[Pattern[/\\w+=\\w+/]]] $custom_attribute = undef,
+#  Optional[Array[Pattern[/\\w+=\\w+/]]] $extension_request = undef,
+#  Optional[String] $dns_alt_names = undef,
+#  Optional[String] $environment = undef,
 ) {
     # TODO: Format output
     # TODO: Check that we are running as root/Administrator.
@@ -11,7 +15,7 @@ plan local::provision_agent (
     without_default_logging() || { run_plan(facts, nodes => $nodes) }
     get_targets($nodes).each |$target| {
       $target_facts = $target.facts()
-      if $target_facts['platform_tag'] == undef {
+      if $target_facts['aio_agent_version'] == undef {
         # Update Master facts if needed
         if get_targets($master)[0].facts()['fqdn'] == undef {
           notice("Updating facts for ${master}")
@@ -35,16 +39,26 @@ plan local::provision_agent (
         run_task(
           $bootstrap_task,
           $target,
-          master => $master_fqdn
+          master => $master_fqdn,
+#          custom_attribute => $custom_attribute,
+#          extension_request => $extension_request,
+#          dns_alt_names => $dns_alt_names,
+#          environment => $environment,
         )
+        $target_certname = run_task(
+          'puppet_conf',
+          $target,
+          'Getting the certname for the agent',
+          action => 'get',
+          setting => 'certname'
+        ).find($target.name).value['status']
         without_default_logging() || { run_plan(facts, nodes => $target) }
-        $node_fqdn = get_targets($target)[0].facts()['fqdn']
         run_task(
           'cert_sign',
           $master,
-          "Signing certificate for ${node_fqdn} on ${master_fqdn}",
+          "Signing certificate for ${target_certname} on ${master_fqdn}",
           allow_dns_alt_names => 'yes',
-          agent_certnames => $node_fqdn
+          agent_certnames => $target_certname
         )
       } else {
         notice('Already Bootstrapped')

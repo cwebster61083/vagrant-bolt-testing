@@ -31,10 +31,9 @@ vms:
         foo: bar
       facts:
         something: blah
-    hostname: master.puppetdebug.vlan
     box: ubuntu/xenial64
     roles:
-      - large-size
+      - medium-size
       - base
     provisioners:
       - type: bolt
@@ -46,9 +45,8 @@ vms:
           image: 'centos_7_x86_64'
           size: 64
           delete_on_destroy: true
-        flavor: 'vol.large'
+        flavor: 'vol.medium'
   - name: agent
-    hostname: agent.puppetdebug.vlan
     box: ubuntu/xenial64
     roles:
       - base
@@ -62,7 +60,6 @@ vms:
   - name: windows
     bolt:
       run_as: Administrator
-    hostname: windows.puppetdebug.vlan
     providers:
       - type: openstack
         # Image requires more disk space
@@ -70,6 +67,7 @@ vms:
           size: 64
           image: 'windows_2012_r2_std_eval_x86_64'
           delete_on_destroy: true
+        flavor: 'vol.medium'
     roles:
       - windows
       - base
