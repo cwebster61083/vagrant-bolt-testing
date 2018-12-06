@@ -7,7 +7,7 @@ bolt_triggers:
       - :up
       - :provision
     command: plan
-    name: local::provision_agent
+    name: deploy_pe::provision_agent
     params:
       master: master
     excludes:
@@ -17,7 +17,7 @@ bolt_triggers:
     trigger_commands:
       - :destroy
     command: plan
-    name: local::decom_agent
+    name: deploy_pe::decom_agent
     params:
       master: master
     excludes:
@@ -38,7 +38,7 @@ vms:
     provisioners:
       - type: bolt
         command: plan
-        name: local::provision_master
+        name: deploy_pe::provision_master
     providers:
       - type: openstack
         volume_boot:
