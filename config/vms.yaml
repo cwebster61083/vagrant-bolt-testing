@@ -1,73 +1,64 @@
 ---
-bolt:
-  run_as: root
-bolt_triggers:
-  - trigger_type: :after
-    trigger_commands:
-      - :up
-      - :provision
-    command: plan
-    name: deploy_pe::provision_agent
-    params:
-      master: master
-    excludes:
-      - master
-    verbose: false
-  - trigger_type: :before
-    trigger_commands:
-      - :destroy
-    command: plan
-    name: deploy_pe::decom_agent
-    params:
-      master: master
-    excludes:
-      - master
+vm_defaults:
+  bolt:
+    run_as: root
+  providers:
+    - type: openstack
+      volume_boot:
+        image: 'centos_7_x86_64'
+
 vms:
   - name: master
-    bolt:
-      features:
-        - master
-      vars:
-        foo: bar
-      facts:
-        something: blah
-    box: ubuntu/xenial64
     roles:
+      - pe_master
       - medium-size
       - base
+
+  - name: agent
+    roles:
+      - pe_agent
+      - small-size
+      - base
+
+  - name: windows
+    bolt:
+      run_as: Administrator
+    roles:
+      - pe_agent
+      - windows
+      - win_2k12
+      - base
+
+roles:
+  pe_agent:
+    bolt_triggers:
+      - trigger_type: :after
+        trigger_commands:
+          - :up
+          - :provision
+        command: plan
+        name: deploy_pe::provision_agent
+        params:
+          master: master
+      - trigger_type: :before
+        trigger_commands:
+          - :destroy
+        command: plan
+        name: deploy_pe::decom_agent
+        params:
+          master: master
+
+  pe_master:
     provisioners:
       - type: bolt
         command: plan
         name: deploy_pe::provision_master
+
+  win_2k12:
     providers:
       - type: openstack
-        volume_boot:
-          image: 'centos_7_x86_64'
-          size: 64
-          delete_on_destroy: true
-        flavor: 'vol.medium'
-  - name: agent
-    box: ubuntu/xenial64
-    roles:
-      - base
-    providers:
-      - type: openstack
-        volume_boot:
-          image: 'centos_7_x86_64'
-          size: 8
-          delete_on_destroy: true
-        flavor: 'vol.small'
-  - name: windows
-    bolt:
-      run_as: Administrator
-    providers:
-      - type: openstack
-        # Image requires more disk space
         volume_boot:
           size: 64
           image: 'windows_2012_r2_std_eval_x86_64'
           delete_on_destroy: true
         flavor: 'vol.medium'
-    roles:
-      - windows
-      - base
