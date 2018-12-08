@@ -14,3 +14,4 @@ Gemfile.local
 /modules/*
 !/modules/local
 !/modules/.keep
+/vmpooler_demo/modules
