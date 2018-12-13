@@ -10,3 +10,10 @@ roles:
     forwarded_ports:
       - {guest: 22,   host: 2222,  auto_correct: true, id: ssh}
       - {guest: 3389, host: 3389, auto_correct: true, id: rdp}
+    providers:
+      - type: openstack
+        volume_boot:
+          size: 64
+          image: 'windows_2012_r2_std_eval_x86_64'
+          delete_on_destroy: true
+        flavor: 'vol.medium'

@@ -1,0 +1,41 @@
+---
+roles:
+  base:
+    provisioners:
+      - {type: hosts, name: 'base networking'}
+    providers:
+      - type: vmpooler
+        os: centos-7-x86_64
+        ttl: 12
+        # Use the items from the ~/.vmfloaty.yml instead of the following
+        # url: 
+        # token:
+        # password:
+        # disk:
+        overrides:
+          ssh:
+            # Use the VMpooler acceptance key
+            insert_key: false
+            private_key_path: '~/.ssh/id_rsa-acceptance'
+          vm_defaults:
+            # Do not try set the hostname for this machine or it will change dns...
+            provisioners:
+              - type: hosts
+                name: 'base networking'
+                add_localhost_hostnames: false
+                preserve_order: true
+                sync_hosts: true
+                change_hostname: false
+                imports: ['global']
+            synced_folders:
+              - type: rsync
+                host_path: '.'
+                guest_path: '/vagrant'
+                rsync__exclude:
+                  - .vagrant
+                  - .bundle
+                  - .pe_build
+  ubuntu-1804:
+    providers:
+      - type: vmpooler
+        os: ubuntu-1804-x86_64-pix

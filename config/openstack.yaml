@@ -63,7 +63,7 @@ roles:
                 name: 'base networking'
                 preserve_order: true
                 sync_hosts: true
-                add_localhost_hostnames: false
+                add_localhost_hostnames: true
                 hosts:
                   - ['@facter_ipaddress', ['@vagrant_hostnames']]
                 imports: ['openstack']

@@ -5,9 +5,10 @@ Dir.chdir(vagrant_dir)
 
 require 'vagrant-bolt'
 require 'config_builder'
+require_relative 'lib/vmpooler'
 
 Vagrant.configure('2', &ConfigBuilder.load(
   :yaml_erb,
   :yamldir,
-  File.expand_path('../config', __FILE__)
+  File.expand_path('../config', __FILE__),
 ))

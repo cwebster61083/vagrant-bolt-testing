@@ -9,6 +9,7 @@ vm_defaults:
 
 vms:
   - name: master
+    hostname: master.puppetdebug.vlan
     roles:
       - pe_master
       - medium-size
@@ -20,13 +21,19 @@ vms:
       - small-size
       - base
 
+  - name: ubuntu
+    roles:
+      - ubuntu-1804
+      - pe_agent
+      - small-size
+      - base
+
   - name: windows
     bolt:
       run_as: Administrator
     roles:
       - pe_agent
       - windows
-      - win_2k12
       - base
 
 roles:
@@ -48,17 +55,13 @@ roles:
         params:
           master: master
 
+
   pe_master:
     provisioners:
       - type: bolt
         command: plan
         name: deploy_pe::provision_master
-
-  win_2k12:
-    providers:
-      - type: openstack
-        volume_boot:
-          size: 64
-          image: 'windows_2012_r2_std_eval_x86_64'
-          delete_on_destroy: true
-        flavor: 'vol.medium'
+        params:
+          version: 2018.1.5
+          pe_settings:
+            password: puppetlabs
