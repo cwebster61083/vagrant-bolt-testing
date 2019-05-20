@@ -9,8 +9,10 @@ mod 'local', local: true
 mod 'deploy_pe',
   :git => 'https://github.com/jarretlavallee/puppet-deploy_pe.git'
 mod 'puppetlabs-ruby_task_helper'
-mod 'puppetlabs-service', '0.4.0'
-mod 'puppetlabs-puppet_conf', '0.3.0'
-mod 'puppetlabs-facts', '0.3.1'
-mod 'puppetlabs-bootstrap', '0.4.0'
-mod 'beersy-cert_sign', '0.1.1'
+mod 'puppetlabs-apt', '6.3.0'
+mod 'puppetlabs-stdlib'
+mod 'puppetlabs-bootstrap', '0.5.0'
+mod 'puppetlabs-puppet_conf', '0.3.1'
+mod 'nate-purge_node', '1.3.0'
+mod 'sign_cert',
+  :git => 'https://github.com/m0dular/sign_cert.git'
