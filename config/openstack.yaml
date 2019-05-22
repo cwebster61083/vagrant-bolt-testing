@@ -165,7 +165,7 @@ roles:
     providers:
       - type: openstack
         # 4 cpu, 8GB mem
-        flavor: 'vol.xlarge'
+        flavor: 'vol.large'
         volume_boot:
           size: 64
           delete_on_destroy: true
