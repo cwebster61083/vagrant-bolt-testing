@@ -8,7 +8,8 @@ mod 'local', local: true
 
 mod 'deploy_pe',
   :git => 'https://github.com/jarretlavallee/puppet-deploy_pe.git'
-mod 'puppetlabs-ruby_task_helper'
+
+mod 'puppetlabs-ruby_task_helper', '0.3.0'
 mod 'puppetlabs-apt', '6.3.0'
 mod 'puppetlabs-stdlib'
 mod 'puppetlabs-bootstrap', '0.5.0'
