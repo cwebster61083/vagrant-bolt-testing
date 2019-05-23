@@ -15,6 +15,13 @@ vms:
       - medium-size
       - base
 
+  - name: compiler
+    hostname: compiler.puppetdebug.vlan
+    roles:
+      - pe_compiler
+      - medium-size
+      - base
+
   - name: agent
     roles:
       - pe_agent
@@ -62,6 +69,22 @@ roles:
         command: plan
         name: deploy_pe::provision_master
         params:
-          version: 2018.1.5
+          version: 2019.1.0
           pe_settings:
             password: puppetlabs
+
+  pe_compiler:
+    provisioners:
+      - type: bolt
+        command: plan
+        name: deploy_pe::provision_compiler
+        params:
+          master: master
+    bolt_triggers:
+      - trigger_type: :before
+        trigger_commands:
+          - :destroy
+        command: plan
+        name: deploy_pe::decom_agent
+        params:
+          master: master
